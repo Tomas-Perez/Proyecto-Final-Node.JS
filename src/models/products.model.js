@@ -9,7 +9,8 @@ import {
   addDoc,
   deleteDoc,
   doc,
-  updateDoc
+  updateDoc,
+  setDoc,
 } from "firebase/firestore";
 
 const productsCollection = collection(db, "products");
@@ -22,52 +23,75 @@ const json = fs.readFileSync(jsonPath, "utf-8");
 
 const products = JSON.parse(json);*/
 
+// meter todas las funciones dentro de try/catch
+
 export const getAllProducts = async () => {
-  const querySnapshot = await getDocs(productsCollection);
-  const products = [];
-  querySnapshot.forEach((doc) => {
-    products.push({ id: doc.id, ...doc.data()});
-  });
-  return products;
+  try {
+    const querySnapshot = await getDocs(productsCollection);
+    const products = [];
+    querySnapshot.forEach((doc) => {
+      products.push({ id: doc.id, ...doc.data() });
+    });
+    return products;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const getProductById = async (id) => {
-  const productDoc = await getDoc(doc(productsCollection, id));
-  if (productDoc.exists()) {
-    //console.log(productDoc.data());
+  try {
+    const productDoc = await getDoc(doc(productsCollection, id));
+
+    if (!productDoc.exists()) {
+      return null;
+    }
     return productDoc.data();
-  } else {
-    return null;
+  } catch (error) {
+    console.error(error);
   }
 };
 
 export const saveProduct = async (product) => {
-  await addDoc(productsCollection, product);
+
+  try {
+    await addDoc(productsCollection, product);
+  } catch (error) {
+    console.error(error);
+  }
+
 };
 
 export const changeProduct = async (id, name, price) => {
-  const productRef = doc(productsCollection, id);
-  const productDoc = await getDoc(productRef);
+  try {
+    const productRef = doc(productsCollection, id);
+    const productDoc = await getDoc(productRef);
 
-  if (!productDoc.exists()) {
-    return null;
+    if (!productDoc.exists()) {
+      return null;
+    }
+
+    const updatedProduct = { name, price };
+
+    await setDoc(productRef, updatedProduct);
+
+    return { id, ...updatedProduct };
+  } catch (error) {
+    console.error(error);
   }
-
-  const updatedProduct = { name, price };
-
-  await updateDoc(productRef, updatedProduct);
-
-  return { id, ...updatedProduct };
 };
 
 export const deleteProduct = async (id) => {
-  const productRef = doc(productsCollection, id);
-  const productDoc = await getDoc(productRef);
+  try {
+    const productRef = doc(productsCollection, id);
+    const productDoc = await getDoc(productRef);
 
-  if (!productDoc.exists()) {
-    return null;
+    if (!productDoc.exists()) {
+      return null;
+    }
+
+    await deleteDoc(productRef);
+    return productDoc.data();
+  } catch (error) {
+    console.error(error);
   }
-
-  await deleteDoc(productRef);
-  return productDoc.data();
 };
