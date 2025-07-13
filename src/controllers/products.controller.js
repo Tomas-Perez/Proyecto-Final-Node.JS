@@ -1,4 +1,5 @@
 import * as model from "../models/products.model.js";
+import * as utils from "../utils/utils.js"
 
 export const getAllProducts = async (req, res) => {
   const products = await model.getAllProducts();
@@ -45,30 +46,52 @@ export const createProduct = async (req, res) => {
   res.status(201).json(newProduct);
 };
 
-export const changeProduct = async (req, res) => { // REVISAR
+export const changeAllProduct = async (req, res) => {
   const productId = req.params.id;
   const { name, price } = req.body;
+  const changedProduct = {
+    productId,
+    name,
+    price,
+  };
 
-  try {
-    const updatedProduct = await model.changeProduct(productId, name, price); // conviene hacer funcion q mande un producto completo
-
-    if (!updatedProduct) {
-      return res.status(404).json({ error: "Producto no encontrado" });
-    }
-
-    res.json(updatedProduct);
-  } catch (error) {
-    console.error("Error al modificar el producto:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+  const errors = validatePutProduct(changedProduct);
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
   }
+
+  const updatedProduct = await model.changeAllProduct(productId,changedProduct);
+
+  if (!updatedProduct) {
+    return res.status(404).json({ error: "Producto no encontrado" });
+  }
+
+  res.json(updatedProduct);
+};
+
+export const patchProduct = async (req, res) => {
+  const id = req.params.id;
+  const partialData = req.body;
+
+  const errors = validatePatchProduct(partialData);
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
+
+  const updatedProduct = await model.patchProduct(id, partialData);
+
+  if (!updatedProduct) {
+    return res.status(404).json({ error: "Producto no encontrado " });
+  }
+  res.json(updatedProduct);
 };
 
 export const deleteProduct = async (req, res) => {
-  const id = req.params.id; // sacar parseInt
+  const id = req.params.id;
 
   const deletedProduct = await model.deleteProduct(id);
   if (!deletedProduct) {
     return res.status(404).json({ error: "No existe el producto" });
   }
-  res.json({ message: "Producto eliminado", product: deletedProduct }); // testear
+  res.json({ message: "Producto eliminado", product: deletedProduct });
 };

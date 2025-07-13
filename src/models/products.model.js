@@ -1,6 +1,3 @@
-import fs from "fs";
-import path from "path";
-
 import { db } from "../data/data.js";
 import {
   collection,
@@ -14,16 +11,6 @@ import {
 } from "firebase/firestore";
 
 const productsCollection = collection(db, "products");
-
-/*const __dirname = import.meta.dirname;
-
-const jsonPath = path.join(__dirname, "./products.json");
-
-const json = fs.readFileSync(jsonPath, "utf-8");
-
-const products = JSON.parse(json);*/
-
-// meter todas las funciones dentro de try/catch
 
 export const getAllProducts = async () => {
   try {
@@ -52,16 +39,14 @@ export const getProductById = async (id) => {
 };
 
 export const saveProduct = async (product) => {
-
   try {
     await addDoc(productsCollection, product);
   } catch (error) {
     console.error(error);
   }
-
 };
 
-export const changeProduct = async (id, name, price) => {
+export const changeAllProduct = async (id, changedProduct) => {
   try {
     const productRef = doc(productsCollection, id);
     const productDoc = await getDoc(productRef);
@@ -70,11 +55,26 @@ export const changeProduct = async (id, name, price) => {
       return null;
     }
 
-    const updatedProduct = { name, price };
+    await setDoc(productRef, changedProduct); // Reemplazo completo
 
-    await setDoc(productRef, updatedProduct);
+    return { id, ...changedProduct };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-    return { id, ...updatedProduct };
+export const patchProduct = async (id, product) => {
+  try {
+    const productRef = doc(productsCollection, id);
+    const productDoc = await getDoc(productRef);
+
+    if (!productDoc.exists()) {
+      return null;
+    }
+
+    await updateDoc(productRef, product);
+    return {id, ...productDoc.data(), ...product};
+
   } catch (error) {
     console.error(error);
   }
