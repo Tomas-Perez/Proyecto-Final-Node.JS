@@ -4,12 +4,10 @@ const default_user = {
     id: 1,
     email: "user@email.com",
     password: "strongPass123"
-}
+} // user de prueba
 
 export const login = (req, res) => {
     const {email, password} = req.body;
-
-    // verificar credenciales del user con bd
 
     const user = {id: 1, email};
 
@@ -17,6 +15,6 @@ export const login = (req, res) => {
         const token = generateToken(user);
         res.json({token});
     } else {
-        res.sendStatus(401); // agregar mensaje a rta
+        res.sendStatus(401);
     }
 }

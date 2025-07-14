@@ -1,46 +1,85 @@
 // Validar que un producto sea valido para PUT (reemplazo total)
-export const validatePutProduct = (data) => {
+export const validatePutProduct = (newData, originalProduct) => {
   const errors = [];
 
-  if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
-    errors.push("El campo 'name' es obligatorio y debe ser un string no vacío.");
+  if (!newData || typeof newData !== "object" || Object.keys(newData).length === 0) {
+    errors.push("El cuerpo de la solicitud no puede estar vacío.");
+    return errors;
   }
 
-  if (data.price === undefined || typeof data.price !== "number" || data.price < 0) {
-    errors.push("El campo 'price' es obligatorio y debe ser un número mayor o igual a 0.");
+  const originalKeys = Object.keys(originalProduct).sort();
+  const newKeys = Object.keys(newData).sort();
+
+  // Verificar que tenga los mismos campos exactamente
+  const sameStructure =
+    originalKeys.length === newKeys.length &&
+    originalKeys.every((key, i) => key === newKeys[i]);
+
+  if (!sameStructure) {
+    errors.push(
+      `El cuerpo debe incluir exactamente los siguientes campos: ${originalKeys.join(", ")}`
+    );
+  }
+
+  // No permitir campos undefined
+  const undefinedFields = Object.entries(newData).filter(([_, value]) => value === undefined);
+  if (undefinedFields.length > 0) {
+    errors.push(`Los siguientes campos no pueden ser undefined: ${undefinedFields.map(([k]) => k).join(", ")}`);
   }
 
   return errors;
-}
+};
 
 // Validar que un producto tenga campos validos para PATCH (actualización parcial)
 export const validatePatchProduct = (data) => {
-  const validFields = ["name", "price"];
-  const keys = Object.keys(data);
   const errors = [];
 
-  if (keys.length === 0) {
+  if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
     errors.push("Debes enviar al menos un campo para actualizar.");
     return errors;
   }
 
-  const invalidFields = keys.filter(k => !validFields.includes(k));
-  if (invalidFields.length > 0) {
-    errors.push(`Campos inválidos: ${invalidFields.join(", ")}`);
+  // No permitir campos undefined
+  const undefinedFields = Object.entries(data).filter(([_, value]) => value === undefined);
+  if (undefinedFields.length > 0) {
+    errors.push(`Los siguientes campos no pueden ser undefined: ${undefinedFields.map(([k]) => k).join(", ")}`);
   }
 
-  if (data.name !== undefined && (typeof data.name !== "string" || data.name.trim() === "")) {
-    errors.push("El campo 'name' debe ser un string no vacío.");
+  return errors;
+};
+
+
+export const validateDynamicProduct = (data, {
+  requireAll = false,
+  requiredFields = [],
+  fieldTypes = {}
+} = {}) => {
+  const errors = [];
+
+  if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
+    errors.push("El cuerpo de la solicitud no puede estar vacío.");
+    return errors;
   }
 
-  if (data.price !== undefined && (typeof data.price !== "number" || data.price < 0)) {
-    errors.push("El campo 'price' debe ser un número mayor o igual a 0.");
+  const undefinedFields = Object.entries(data).filter(([_, value]) => value === undefined);
+  if (undefinedFields.length > 0) {
+    errors.push(`Campos con valor undefined: ${undefinedFields.map(([k]) => k).join(", ")}`);
+  }
+
+  if (requireAll) {
+    requiredFields.forEach(field => {
+      if (!(field in data)) {
+        errors.push(`El campo '${field}' es obligatorio.`);
+      }
+    });
+  }
+
+  // Validar tipos si se pasan
+  for (const [field, expectedType] of Object.entries(fieldTypes)) {
+    if (data[field] !== undefined && typeof data[field] !== expectedType) {
+      errors.push(`El campo '${field}' debe ser de tipo ${expectedType}.`);
+    }
   }
 
   return errors;
 }
-
-export const validatePostProduct = (data) => {
-
-}
-

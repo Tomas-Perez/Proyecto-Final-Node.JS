@@ -12,9 +12,9 @@ import {
 
 const router = Router();
 
-router.get("/products", authentication, getAllProducts); // Ver si conviene autenticar desde index o desde rutas
-router.get("/products/search", authentication, searchProduct);
-router.get("/products/:id", authentication, getProductById);
+router.get("/products", getAllProducts);
+router.get("/products/search", searchProduct);
+router.get("/products/:id", getProductById);
 router.post("/products", authentication, createProduct);
 router.put("/products/:id", authentication, changeAllProduct);
 router.patch("/products/:id", authentication, patchProduct);

@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(express.json()); // middleware para traducir req body a json
 app.use(cors()); // para realizar peticiones de diferentes dominios en navegadores
 app.use("/auth", authRouter);
-app.use(productsRouter); // agregando un parametro adelante se puede poner un prefijo a la ruta
+app.use("/api", productsRouter); // agregando un parametro adelante se puede poner un prefijo a la ruta
 
 app.get("/", (req, res) => {
     res.send("Hola mundo desde Express");
