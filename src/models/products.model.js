@@ -73,8 +73,7 @@ export const patchProduct = async (id, product) => {
     }
 
     await updateDoc(productRef, product);
-    return {id, ...productDoc.data(), ...product};
-
+    return { id, ...productDoc.data(), ...product };
   } catch (error) {
     console.error(error);
   }

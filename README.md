@@ -126,7 +126,18 @@ npm run dev
 - **Descripción:** Elimina un producto por su ID.
 - **Parámetros:**
   - `id` (path, requerido): ID del producto a eliminar.
-- **Respuesta:** 204 No Content
+- **Respuesta ejemplo:**
+
+```json
+{
+    "message": "Producto eliminado",
+    "product": {
+        "price": 1500,
+        "stock": 0,
+        "name": "Labubu"
+    }
+}
+```
 
 ## Códigos de estado
 

@@ -7,22 +7,6 @@ export const getAllProducts = async (req, res) => {
   res.json(products);
 };
 
-/*export const searchProduct = async (req, res) => {
-  const { name } = req.query;
-
-  const products = await model.getAllProducts();
-
-  /*if (!products) {
-    return res.status(404).json({ error: "No existe el producto" });
-  }
-
-  const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(name.toLowerCase())
-  );
-
-  res.json(filteredProducts);
-};*/
-
 export const searchProduct = async (req, res) => {
   const products = await model.getAllProducts();
 
@@ -113,5 +97,6 @@ export const deleteProduct = async (req, res) => {
   if (!deletedProduct) {
     return res.status(404).json({ error: "No existe el producto" });
   }
-  res.json({ message: "Producto eliminado", product: deletedProduct });
+  //res.json({ message: "Producto eliminado", product: deletedProduct });
+  res.status(204);
 };

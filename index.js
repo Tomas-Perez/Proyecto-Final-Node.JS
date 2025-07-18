@@ -1,8 +1,8 @@
-import "dotenv/config"
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import productsRouter from "./src/routes/products.routes.js";
-import authRouter from "./src/routes/auth.routes.js"
+import authRouter from "./src/routes/auth.routes.js";
 import bodyParser from "body-parser";
 
 const app = express();
@@ -14,7 +14,7 @@ app.use("/auth", authRouter);
 app.use("/api", productsRouter); // agregando un parametro adelante se puede poner un prefijo a la ruta
 
 app.get("/", (req, res) => {
-    res.send("Hola mundo desde Express");
+    res.json({message: "Bienvenidos a la API REST"});
 });
 
 app.use((req, res, next) => { // Para manejo de rutas invalidas
