@@ -97,6 +97,5 @@ export const deleteProduct = async (req, res) => {
   if (!deletedProduct) {
     return res.status(404).json({ error: "No existe el producto" });
   }
-  //res.json({ message: "Producto eliminado", product: deletedProduct });
-  res.status(204);
+  res.json({ message: "Producto eliminado", product: deletedProduct });
 };
